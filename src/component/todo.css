@@ -1,0 +1,7 @@
+.iconBtn{
+    transition: all 0.4s !important;
+}
+.iconBtn:hover{
+    background-color: rgb(199, 199, 199) !important;
+    box-shadow: 0px 7px 7px rgb(0, 0, 0,0.3);
+}
