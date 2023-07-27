@@ -19,7 +19,6 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 
-
 export default function Todo({ todo, handleCheck, suppTodo, updateTodo }) {
   const [openDialog, setOpenDialog] = useState(false);
   const [openDialogUpdate, setOpenDialogUpdate] = useState(false);
@@ -38,7 +37,6 @@ export default function Todo({ todo, handleCheck, suppTodo, updateTodo }) {
 
   function confirmDelete() {
     suppTodo(todo.id);
-
   }
 
   function handleUpdateClick() {
@@ -46,10 +44,9 @@ export default function Todo({ todo, handleCheck, suppTodo, updateTodo }) {
   }
 
   function confirmUpdate() {
-    updateTodo(todo.id,updatedTodo);
+    updateTodo(todo.id, updatedTodo);
     setOpenDialogUpdate(false);
   }
-
 
   return (
     <>
@@ -123,7 +120,14 @@ export default function Todo({ todo, handleCheck, suppTodo, updateTodo }) {
         <CardContent>
           <Grid container spacing={2}>
             <Grid item xs={8}>
-              <Typography variant="h5">{todo.title}</Typography>
+              <Typography
+                variant="h5"
+                style={{
+                  textDecoration: todo.isComplete ? "line-through" : "none",
+                }}
+              >
+                {todo.title}
+              </Typography>
               <Typography>{todo.details}</Typography>
             </Grid>
             <Grid

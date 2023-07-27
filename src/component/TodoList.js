@@ -11,7 +11,8 @@ import TextField from "@mui/material/TextField";
 import Grid from "@mui/material/Grid";
 import { v4 as uuidv4 } from "uuid";
 import Todo from "./Todo";
-import { useState,useEffect } from "react";
+import { useState, useEffect } from "react";
+import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 const initialTodos = [
   {
     id: uuidv4(),
@@ -35,6 +36,7 @@ const initialTodos = [
 export default function TodoList() {
   const [titleInput, setTitleInput] = useState("");
   const [todos, setTodos] = useState(initialTodos);
+  const [displayTodosType, setDisplayTodosType] = useState("all");
 
   function handleCheckClick(todoId) {
     const updatedTodos = todos.map(t => {
@@ -44,13 +46,13 @@ export default function TodoList() {
       return t;
     });
     setTodos(updatedTodos);
-    localStorage.setItem('todos', JSON.stringify(updatedTodos));
+    localStorage.setItem("todos", JSON.stringify(updatedTodos));
   }
 
   function suppClickTodo(todoId) {
     const updatedTodos = todos.filter(todo => todo.id !== todoId);
     setTodos(updatedTodos);
-    localStorage.setItem('todos', JSON.stringify(updatedTodos));
+    localStorage.setItem("todos", JSON.stringify(updatedTodos));
   }
 
   function updateClickTodo(todoId, obj) {
@@ -63,17 +65,35 @@ export default function TodoList() {
       }
     });
     setTodos(updatedTodos);
-    localStorage.setItem('todos', JSON.stringify(updatedTodos));
+    localStorage.setItem("todos", JSON.stringify(updatedTodos));
     console.log("first");
   }
 
-  useEffect(()=>{
-  const storageTodos = JSON.parse(localStorage.getItem('todos'))
-  setTodos(storageTodos);
+  function changeDiplayedType(e) {
+    setDisplayTodosType(e.target.value);
+  }
 
-  },[])
+  useEffect(() => {
+    const storageTodos = JSON.parse(localStorage.getItem("todos"));
+    setTodos(storageTodos);
+  }, []);
 
-  const todoJsx = todos.map(todo => {
+  let todosBeRendre = todos;
+
+  // Todos Complete
+  const todosComplet = todos.filter(todo => todo.isComplete);
+  // Todos Non Complete
+  const todosNonComplet = todos.filter(todo => !todo.isComplete);
+
+  if (displayTodosType === "pas-fini") {
+    todosBeRendre = todosNonComplet;
+  } else if (displayTodosType === "fini") {
+    todosBeRendre = todosComplet;
+  } else {
+    todosBeRendre = todos;
+  }
+
+  const todoJsx = todosBeRendre.map(todo => {
     return (
       <Todo
         key={todo.id}
@@ -96,8 +116,8 @@ export default function TodoList() {
     };
     const updatedTodos = [...todos, newTodo];
     setTodos(updatedTodos);
-    localStorage.setItem('todos', JSON.stringify(updatedTodos));
-    setTitleInput(" ");
+    localStorage.setItem("todos", JSON.stringify(updatedTodos));
+    setTitleInput("");
   };
   return (
     <>
@@ -117,9 +137,14 @@ export default function TodoList() {
                 marginTop: "17px",
               }}
             >
-              <ToggleButton>Pas Fini</ToggleButton>
-              <ToggleButton>Fini</ToggleButton>
-              <ToggleButton>Tout</ToggleButton>
+              <ToggleButtonGroup
+                value={displayTodosType}
+                onChange={changeDiplayedType}
+              >
+                <ToggleButton value="pas-fini">Pas Fini</ToggleButton>
+                <ToggleButton value="fini">Fini</ToggleButton>
+                <ToggleButton value="all">Tout</ToggleButton>
+              </ToggleButtonGroup>
             </div>
             {/* === Filter Button === */}
             {/* All Todos */}
@@ -146,6 +171,7 @@ export default function TodoList() {
                     onClick={handleCheckClick}
                     sx={{ width: "100%", height: "100%" }}
                     variant="contained"
+                    disabled={titleInput.length == 0}
                   >
                     Ajouter
                   </Button>
