@@ -11,8 +11,7 @@ import TextField from "@mui/material/TextField";
 import Grid from "@mui/material/Grid";
 import { v4 as uuidv4 } from "uuid";
 import Todo from "./Todo";
-import { useState } from "react";
-
+import { useState,useEffect } from "react";
 const initialTodos = [
   {
     id: uuidv4(),
@@ -36,19 +35,69 @@ const initialTodos = [
 export default function TodoList() {
   const [titleInput, setTitleInput] = useState("");
   const [todos, setTodos] = useState(initialTodos);
+
+  function handleCheckClick(todoId) {
+    const updatedTodos = todos.map(t => {
+      if (t.id === todoId) {
+        t.isComplete = !t.isComplete;
+      }
+      return t;
+    });
+    setTodos(updatedTodos);
+    localStorage.setItem('todos', JSON.stringify(updatedTodos));
+  }
+
+  function suppClickTodo(todoId) {
+    const updatedTodos = todos.filter(todo => todo.id !== todoId);
+    setTodos(updatedTodos);
+    localStorage.setItem('todos', JSON.stringify(updatedTodos));
+  }
+
+  function updateClickTodo(todoId, obj) {
+    const updatedTodos = todos.map(t => {
+      if (t.id === todoId) {
+        console.log(obj);
+        return { ...t, title: obj.title, details: obj.details };
+      } else {
+        return t;
+      }
+    });
+    setTodos(updatedTodos);
+    localStorage.setItem('todos', JSON.stringify(updatedTodos));
+    console.log("first");
+  }
+
+  useEffect(()=>{
+  const storageTodos = JSON.parse(localStorage.getItem('todos'))
+  setTodos(storageTodos);
+
+  },[])
+
   const todoJsx = todos.map(todo => {
-    return <Todo key={todo.id} title={todo.title} details={todo.details} />;
+    return (
+      <Todo
+        key={todo.id}
+        // title={todo.title}
+        // details={todo.details}
+        todo={todo}
+        handleCheck={handleCheckClick}
+        suppTodo={suppClickTodo}
+        updateTodo={updateClickTodo}
+      />
+    );
   });
 
-  const handleAddClick = () => {
+  handleCheckClick = () => {
     const newTodo = {
-      id : uuidv4(),
-      title : titleInput,
-      details : "",
-      isComplete : false
-    }
-    setTodos([...todos, newTodo])
-    setTitleInput(" ")
+      id: uuidv4(),
+      title: titleInput,
+      details: "",
+      isComplete: false,
+    };
+    const updatedTodos = [...todos, newTodo];
+    setTodos(updatedTodos);
+    localStorage.setItem('todos', JSON.stringify(updatedTodos));
+    setTitleInput(" ");
   };
   return (
     <>
@@ -85,14 +134,16 @@ export default function TodoList() {
                     style={{ width: "100%" }}
                     id="standard-basic"
                     label="Nouveux Task"
-                    value = {titleInput}
-                    onChange={(e)=>{setTitleInput(e.target.value)}}
+                    value={titleInput}
+                    onChange={e => {
+                      setTitleInput(e.target.value);
+                    }}
                     variant="standard"
                   />{" "}
                 </Grid>
                 <Grid xs={4}>
                   <Button
-                    onClick={handleAddClick}
+                    onClick={handleCheckClick}
                     sx={{ width: "100%", height: "100%" }}
                     variant="contained"
                   >
