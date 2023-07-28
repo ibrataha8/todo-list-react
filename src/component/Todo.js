@@ -123,12 +123,22 @@ export default function Todo({ todo, handleCheck, suppTodo, updateTodo }) {
               <Typography
                 variant="h5"
                 style={{
-                  textDecoration: todo.isComplete ? "line-through" : "none",
+                  textDecoration: todo.isComplete
+                    ? "line-through white"
+                    : "none",
                 }}
               >
                 {todo.title}
               </Typography>
-              <Typography>{todo.details}</Typography>
+              <Typography
+                style={{
+                  textDecoration: todo.isComplete
+                    ? "line-through white"
+                    : "none",
+                }}
+              >
+                {todo.details}
+              </Typography>
             </Grid>
             <Grid
               item
