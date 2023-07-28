@@ -11,7 +11,7 @@ import TextField from "@mui/material/TextField";
 import Grid from "@mui/material/Grid";
 import { v4 as uuidv4 } from "uuid";
 import Todo from "./Todo";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 const initialTodos = [
   {
@@ -74,16 +74,28 @@ export default function TodoList() {
   }
 
   useEffect(() => {
-    const storageTodos = JSON.parse(localStorage.getItem("todos"));
+    const storageTodos = JSON.parse(localStorage.getItem("todos")) ?? [];
     setTodos(storageTodos);
   }, []);
 
   let todosBeRendre = todos;
 
   // Todos Complete
-  const todosComplet = todos.filter(todo => todo.isComplete);
+  const todosComplet = useMemo(() => {
+    return todos.filter(todo => {
+      console.log("todosComplet");
+      return todo.isComplete;
+    });
+  },[todos]);
+  
   // Todos Non Complete
-  const todosNonComplet = todos.filter(todo => !todo.isComplete);
+  const todosNonComplet = useMemo(() => {
+    return todos.filter(todo => {
+      console.log("todosNonComplet");
+      return ! todo.isComplete;
+    });
+  },[todos]);
+
 
   if (displayTodosType === "pas-fini") {
     todosBeRendre = todosNonComplet;
@@ -123,7 +135,7 @@ export default function TodoList() {
     <>
       <CssBaseline />
       <Container maxWidth="sm">
-        <Card sx={{ minWidth: 275 }}>
+        <Card style={{ maxHeight: "90vh", overflow: "auto" }}>
           <CardContent>
             <Typography variant="h2" style={{ textAlign: "center" }}>
               Todos
@@ -171,7 +183,7 @@ export default function TodoList() {
                     onClick={handleCheckClick}
                     sx={{ width: "100%", height: "100%" }}
                     variant="contained"
-                    disabled={titleInput.length == 0}
+                    disabled={titleInput.length === 0}
                   >
                     Ajouter
                   </Button>
